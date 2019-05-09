@@ -1,0 +1,39 @@
+- name: Preparation
+  hosts: all
+  become: True
+  tasks:
+    - name: Remove swapfile from /etc/fstab
+      mount:
+        name: swap
+        fstype: swap
+        state: absent
+
+    - name: Disable swap
+      command: swapoff -a
+      when: ansible_swaptotal_mb > 0
+
+    - name: Add kubernetes repository key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+    - name: Add kubernetes repository to repository list
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        filename: kubernetes
+
+    - name: update the apt cache
+      apt: update_cache=yes cache_valid_time=3600
+
+- name: Deploy master
+  hosts: k8s_master
+  become: True
+  roles:
+    - role: k8s_master
+
+
+- name: Deploy node
+  hosts: k8s_node
+  become: True
+  roles:
+    - role: k8s_node
+
