@@ -30,3 +30,7 @@ ansible_ssh_private_key_file=/home/example/.ssh/example.pem
 #ansible_sudo_pass: example
 ```
 
+## Run anisble-playbook
+```
+ansible-playbook create_k8s_cluster.yml
+```
